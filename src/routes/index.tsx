@@ -1,13 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BookOpen, Sparkles, Truck } from "lucide-react";
+import { useState, useEffect } from "react";
 import { BookRow } from "@/components/BookRow";
-import { booksByIds, categories, featuredIds, techIds, teluguIds, classicsIds } from "@/lib/books";
+import { categories, featuredIds, techIds, teluguIds, classicsIds } from "@/lib/books";
+import { storage, StoredBook } from "@/lib/storage";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
+  const [allBooks, setAllBooks] = useState<StoredBook[]>([]);
+
+  useEffect(() => {
+    storage.init();
+    setAllBooks(storage.books.get());
+  }, []);
+
+  const getBooksByIds = (ids: string[]) => allBooks.filter(b => ids.includes(b.id));
+
   return (
     <div>
       {/* Hero */}
@@ -44,13 +55,13 @@ function Index() {
       <BookRow
         title="Featured Books"
         subtitle="Our curated selection of the finest pre-loved books this week."
-        books={booksByIds(featuredIds)}
+        books={getBooksByIds(featuredIds)}
       />
 
       <BookRow
         title="Tech & Programming"
         subtitle="Expand your knowledge with our collection of programming and technology books."
-        books={booksByIds(techIds)}
+        books={getBooksByIds(techIds)}
       />
 
       {/* Why choose */}
@@ -83,13 +94,13 @@ function Index() {
       <BookRow
         title="Telugu Literature"
         subtitle="Explore our collection of classic and contemporary Telugu books."
-        books={booksByIds(teluguIds)}
+        books={getBooksByIds(teluguIds)}
       />
 
       <BookRow
         title="Timeless Classics"
         subtitle="Discover literary masterpieces that have stood the test of time."
-        books={booksByIds(classicsIds)}
+        books={getBooksByIds(classicsIds)}
       />
 
       {/* Categories */}

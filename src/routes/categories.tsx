@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { categories, booksByCategory } from "@/lib/books";
+import { useState, useEffect } from "react";
+import { categories } from "@/lib/books";
+import { storage, StoredBook } from "@/lib/storage";
 
 export const Route = createFileRoute("/categories")({
   head: () => ({
@@ -12,13 +14,20 @@ export const Route = createFileRoute("/categories")({
 });
 
 function CategoriesPage() {
+  const [books, setBooks] = useState<StoredBook[]>([]);
+
+  useEffect(() => {
+    storage.init();
+    setBooks(storage.books.get());
+  }, []);
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
       <h1 className="text-4xl sm:text-5xl">Categories</h1>
       <p className="mt-2 text-muted-foreground">Pick a shelf and start browsing.</p>
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {categories.map((c) => {
-          const preview = booksByCategory(c.slug)[0];
+          const preview = books.find(b => b.category === c.slug);
           return (
             <Link
               key={c.slug}

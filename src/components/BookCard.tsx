@@ -1,11 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { ShoppingCart } from "lucide-react";
-import type { Book } from "@/lib/books";
-import { useCart } from "@/lib/cart";
+import { ArrowRight } from "lucide-react";
+import type { StoredBook } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 
-export function BookCard({ book }: { book: Book }) {
-  const { add } = useCart();
+export function BookCard({ book }: { book: StoredBook }) {
   const discount = book.originalPrice
     ? Math.round(((book.originalPrice - book.price) / book.originalPrice) * 100)
     : 0;
@@ -31,6 +29,11 @@ export function BookCard({ book }: { book: Book }) {
             {discount}% OFF
           </span>
         )}
+        {book.status && book.status !== "AVAILABLE" && (
+          <span className="absolute bottom-3 left-3 rounded-full bg-destructive px-2.5 py-1 text-xs font-semibold text-destructive-foreground shadow">
+            {book.status}
+          </span>
+        )}
       </Link>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <Link
@@ -48,15 +51,16 @@ export function BookCard({ book }: { book: Book }) {
           )}
         </div>
         <p className="text-xs text-muted-foreground">
-          {book.year} • {book.condition}
-          {book.language ? ` • ${book.language}` : ""}
+          {book.category} • {book.condition}
         </p>
         <Button
           size="sm"
           className="mt-2 rounded-full"
-          onClick={() => add(book)}
+          asChild
         >
-          <ShoppingCart className="h-4 w-4" /> Add to cart
+          <Link to="/book/$id" params={{ id: book.id }}>
+            View Details <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+          </Link>
         </Button>
       </div>
     </div>

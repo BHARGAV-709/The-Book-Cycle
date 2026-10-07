@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { LogIn, Search, ShoppingCart } from "lucide-react";
-import { useCart } from "@/lib/cart";
+import { LogIn, LogOut, Search, User as UserIcon } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -10,7 +10,8 @@ const nav = [
 ] as const;
 
 export function SiteHeader() {
-  const { count } = useCart();
+  const { user, logout } = useAuth();
+  
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -29,22 +30,49 @@ export function SiteHeader() {
               {n.label}
             </Link>
           ))}
+          {user && (
+            <>
+              <Link
+                to="/add-book"
+                className="text-sm text-muted-foreground transition hover:text-foreground"
+                activeProps={{ className: "text-foreground font-medium underline underline-offset-8 decoration-primary decoration-2" }}
+              >
+                List a Book
+              </Link>
+              <Link
+                to="/dashboard"
+                className="text-sm text-muted-foreground transition hover:text-foreground"
+                activeProps={{ className: "text-foreground font-medium underline underline-offset-8 decoration-primary decoration-2" }}
+              >
+                Dashboard
+              </Link>
+            </>
+          )}
         </nav>
         <div className="flex items-center gap-1">
           <button aria-label="Search" className="rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-foreground">
             <Search className="h-5 w-5" />
           </button>
-          <button aria-label="Sign in" className="rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-foreground">
-            <LogIn className="h-5 w-5" />
-          </button>
-          <Link to="/cart" aria-label="Cart" className="relative rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-foreground">
-            <ShoppingCart className="h-5 w-5" />
-            {count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">
-                {count}
+          
+          {user ? (
+            <>
+              <span className="hidden text-sm text-muted-foreground sm:inline-block px-2">
+                Hi, {user.name.split(' ')[0]}
               </span>
-            )}
-          </Link>
+              <button 
+                onClick={logout}
+                aria-label="Sign out" 
+                className="rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-destructive"
+                title="Sign out"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
+            </>
+          ) : (
+            <Link to="/login" aria-label="Sign in" className="rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-foreground" title="Sign in">
+              <LogIn className="h-5 w-5" />
+            </Link>
+          )}
         </div>
       </div>
     </header>

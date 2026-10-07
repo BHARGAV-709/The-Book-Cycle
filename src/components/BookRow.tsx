@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BookCard } from "./BookCard";
-import type { Book } from "@/lib/books";
+import type { StoredBook } from "@/lib/storage";
 
 export function BookRow({
   title,
@@ -10,7 +10,7 @@ export function BookRow({
 }: {
   title: string;
   subtitle?: string;
-  books: Book[];
+  books: StoredBook[];
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const scroll = (dir: 1 | -1) => {
